@@ -1,8 +1,10 @@
 use passwords::PasswordGenerator;
 use passwords::hasher;
-use passwords::analyzer;
+//use passwords::analyzer;
+use diesel::insert_into;
 use std::io;
 
+mod database;
 
 fn main() {
     println!("Password Manager");
@@ -12,7 +14,7 @@ fn main() {
 
     let mut input = String::new(); 
     io::stdin().read_line(&mut input).expect("Invalid input");
-    let conn = establish_conn();
+    let connection = database::establish_connection();
 
     match input.trim() {
         "1" => {
@@ -76,12 +78,12 @@ fn generate_multiple (length:usize, symbols:bool, number:u32) {
     };
     println!("{:?}", pg.generate(number.try_into().unwrap()).unwrap());
 }
-
+/*
 fn store(username: String, password: String) {
     // hash it 
-    let analyzedpass = analyzer::analyze(password);
     let salt = hasher::gen_salt();
-    let hashed = hasher::bcrypt("10", &salt, analyzedpass);
+    let hashed = hasher::bcrypt(10, &salt, &password);
     // insert it
-    insert_into(conn, username, hashed)
+    insert_into(connection)
 }
+*/
