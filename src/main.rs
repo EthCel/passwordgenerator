@@ -3,6 +3,7 @@ use passwords::hasher;
 use passwords::analyzer;
 use std::io;
 
+
 fn main() {
     println!("Password Manager");
     println!("Press (1) and enter to create a password");
@@ -11,6 +12,7 @@ fn main() {
 
     let mut input = String::new(); 
     io::stdin().read_line(&mut input).expect("Invalid input");
+    let conn = establish_conn();
 
     match input.trim() {
         "1" => {
@@ -73,4 +75,13 @@ fn generate_multiple (length:usize, symbols:bool, number:u32) {
         strict: true,
     };
     println!("{:?}", pg.generate(number.try_into().unwrap()).unwrap());
+}
+
+fn store(username: String, password: String) {
+    // hash it 
+    let analyzedpass = analyzer::analyze(password);
+    let salt = hasher::gen_salt();
+    let hashed = hasher::bcrypt("10", &salt, analyzedpass);
+    // insert it
+    insert_into(conn, username, hashed)
 }
