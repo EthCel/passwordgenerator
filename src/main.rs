@@ -2,10 +2,15 @@ use passwords::PasswordGenerator;
 use passwords::hasher;
 //use passwords::analyzer;
 use diesel::insert_into;
+use diesel::prelude::*;
+
 use std::io;
 
-mod database;
-mod models;
+pub mod models;
+pub mod schema;
+pub mod database;
+
+use crate::schema::users::dsl::users;
 
 fn main() {
     println!("Password Manager");
@@ -80,6 +85,9 @@ fn generate_multiple (length:usize, symbols:bool, number:u32) {
 }
 
 fn store(username: String, password: String) {
+    use crate::schema::users::*;
+    use crate::schema::users::dsl::users;
+
     let connection = database::establish_connection();
     // hash it 
     let salt = hasher::gen_salt();
@@ -87,5 +95,8 @@ fn store(username: String, password: String) {
     // insert it
     // can't insert pg connections
     // must insert a table
-    insert_into(user).values(name.eq("John"), password.eq(hashed.to_String()))
+    insert_into(users::table)
+        // adds random name and hashed password to database
+        .values((name.eq(username.to_string()), password.eq(hashed.to_string())))
+        .execute(connection)
 }
