@@ -1,11 +1,13 @@
 use diesel::prelude::*;
 use schema::users;
+use diesel::prelude::*;
 
-#[derive(Insertable)]
+#[derive(Queryable, Insertable)]
 #[table_name = "users"]
-pub struct NewUser<'a> {
-    pub name: &'a str,
-    pub password: &'a str,
+pub struct User {
+    pub id: i32,
+    pub name: String,
+    pub password: String,
 }
 
 /*

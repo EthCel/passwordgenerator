@@ -5,6 +5,7 @@ use diesel::insert_into;
 use std::io;
 
 mod database;
+mod models;
 
 fn main() {
     println!("Password Manager");
@@ -14,7 +15,6 @@ fn main() {
 
     let mut input = String::new(); 
     io::stdin().read_line(&mut input).expect("Invalid input");
-    let connection = database::establish_connection();
 
     match input.trim() {
         "1" => {
@@ -78,12 +78,14 @@ fn generate_multiple (length:usize, symbols:bool, number:u32) {
     };
     println!("{:?}", pg.generate(number.try_into().unwrap()).unwrap());
 }
-/*
+
 fn store(username: String, password: String) {
+    let connection = database::establish_connection();
     // hash it 
     let salt = hasher::gen_salt();
     let hashed = hasher::bcrypt(10, &salt, &password);
     // insert it
-    insert_into(connection)
+    // can't insert pg connections
+    // must insert a table
+    insert_into(user).values(name.eq("John"), password.eq(hashed.to_String()))
 }
-*/
